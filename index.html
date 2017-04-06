@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Camera Model</title>
+  <script src="webgl-utils.js"></script>
+  <script src="shader-utils.js"></script>
+  <script src="gl-matrix-min.js"></script>
+  <script src="render.js"></script>
+  <script src="Camera.js"></script>
+  <script src="Table.js"></script>
+  <script src="GreenScreen.js"></script>
+  <script src="Cube2.js"></script>
+  <script src="Ring.js"></script>
+  <script src="Sphere.js"></script>
+  <script src="Cylinder.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body onload="main()">
+    <div id="message"></div>
+    <span class="signiture">Created by Chris Fracassi and Charles Billingsley</span>
+    <br>
+    <div class="leftContainer">
+        <div>
+            <span>Choose Which Camera to Move: &nbsp &nbsp &nbsp &nbsp</span>
+            <select id="cameraObjSelect" name="cameraObjSelect" onblur="shouldAnimate = false; paused = false; forward = true;"></select>
+            <input type="radio" id="moveCameraRadio" name="radio" value="camera" checked>
+            <label for="moveCameraRadio">Move Camera &nbsp</label>
+            <button id="generateManyCamerasButton" onclick="generateManyCameras()">Generate 1000 Cameras</button><br>
+        </div>
+        <div>
+            <span>Choose Which Table to Move: &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span>
+            <select id="tableObjSelect" name="tableObjSelect"></select>
+            &nbsp &nbsp
+            <input type="radio" id="moveTableRadio" name="radio" value="table">
+            <label for="moveTableRadio">Move Table</label><br>
+        </div>
+        <div>
+            <span>Choose Which Green Screen to Move:</span>
+            <select id="screenObjSelect" name="screenObjSelect"></select>
+            <input type="radio" id="moveScreenRadio" name="radio" value="screen">
+            <label for="moveScreenRadio">Move Green Screen</label><br>
+        </div>
+        <div>
+            <span>How Many cameras would you like to create?</span>
+            <input id="numOfCameraObjs" type="number" name="numOfCameraObjs" value="3" onblur="createCameraObjs()" min="0"><br>
+        </div>
+        <div>
+            <span>How Many tables would you like to create?</span>
+            <input id="numOfTableObjs" type="number" name="numOfTableObjs" value="1" onblur="createTableObjs()" min="0"><br>
+        </div>
+        <div>
+            <span>How Many green screens would you like to create?</span>
+            <input id="numOfScreenObjs" type="number" name="numOfScreenObjs" value="1" onblur="createScreenObjs()" min="0"><br>
+        </div>
+        <div id="lightcontrol" class="sliderGroup">
+            Light Position
+            <span>X: <input id="lightx" type="range" min="-10" max="10" step="0.5"></span>
+            <span>Y: <input id="lighty" type="range" min="-10" max="10" step="0.5"></span>
+            <span>Z: <input id="lightz" type="range" min="-10" max="10" step="0.5"></span>
+        </div>
+    </div>
+    <div class="rightContainer">
+        <div class="instructions">
+
+            <span class="instructions">Key Shorcuts:</span>
+            <ul>
+                <li>1, 2, 3, 4 to cycle through preset camera positions</li>
+                <li>p = play/pause animation</li>
+                <li>o = speed up animation</li>
+                <li>i = slow down animation</li>
+                <li>x = negative translation on x-axis. X = postive translation on x-axis</li>
+                <li>y = negative translation on y-axis. Y = postive translation on y-axis</li>
+                <li>z = negative translation on x-axis. Z = postive translation on z-axis</li>
+                <li>a = postive rotation on x-axis. A = negative rotation on x-axis</li>
+                <li>b = positive rotation on y-axis. B = negative rotation on y-axis</li>
+                <li>c = positive rotation on z-axis. C = negative rotation on z-axis</li>
+                <li>s = postive rotation of view on x-axis. S = negative rotation of view on x-axis</li>
+                <li>d = positive rotation of view on y-axis. D = negative rotation of view on y-axis</li>
+                <li>f = positive rotation of view on z-axis. F = negative rotation of view on z-axis</li>
+                <li>w = negative translation of view on x-axis. W = postive translation of view on x-axis</li>
+                <li>e = negative translation of view on y-axis. E = postive translation of view on y-axis</li>
+                <li>r = negative translation of view on x-axis. R = postive translation of view on z-axis</li>
+                <li>After making a selection, please click anywhere on the screen to deselect the input. <br>This allows the keyboard shortcuts to work better.</li>
+            </ul>
+        </div>
+    </div>
+    <canvas id="gl-canvas"></canvas>
+</body>
+</html>
