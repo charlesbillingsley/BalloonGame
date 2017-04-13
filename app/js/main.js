@@ -19,12 +19,13 @@ function init() {
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
 
-    geometry = new THREE.BoxGeometry( 200, 200, 200 );
+    geometry = new THREE.BoxGeometry( 2, 2, 2 );
     material = new THREE.MeshPhongMaterial( { color: 0xff0000} );
 
     mesh = new THREE.Mesh( geometry, material );
-    mesh.translateY(400);
-    mesh.translateX(400);
+    mesh.translateY(-4);
+    mesh.translateX(4);
+    mesh.translateZ(955);
     scene.add( mesh );
     objects.push(mesh);
 
@@ -41,12 +42,12 @@ function init() {
         scene.add( object );
     });
 
-    cubeGeo = new THREE.BoxGeometry( 200, 200, 200);
+    cubeGeo = new THREE.BoxGeometry( 2, 2, 2);
     cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
     goodCube = new THREE.Mesh( cubeGeo, cubeMat);
-    goodCube.translateX(-400);
-    goodCube.translateY(300);
-    goodCube.translateZ(100);
+    goodCube.translateX(4);
+    goodCube.translateY(3);
+    goodCube.translateZ(955);
     scene.add(goodCube);
     objects.push(goodCube);
 
