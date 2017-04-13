@@ -120,6 +120,44 @@ function onDocumentMouseDown( event ) {
             document.getElementById("score").textContent="Score :" + score;
         }
 
+        if (score == 10){
+
+            score = 0;
+
+            scene.remove(goodCube);
+            scene.remove(torus);
+            scene.remove(mesh);
+
+            var loader = new THREE.FontLoader();
+            loader.load( 'Immortal_Regular.json', function ( font ) {
+
+                var textGeometry = new THREE.TextGeometry( "You Won!", {
+
+                    font: font,
+
+                    size: 100,
+                    height: 30,
+                    curveSegments: 20,
+
+                    bevelThickness: 3,
+                    bevelSize: 3,
+                    bevelEnabled: true
+
+                });
+
+                var textMaterial = new THREE.MeshPhongMaterial(
+                    { color: 0xff0000, specular: 0xffffff }
+                );
+
+                var text = new THREE.Mesh( textGeometry, textMaterial );
+
+                scene.add( text );
+
+            });
+
+           // winner();
+        }
+
         //TODO: Potential code to remove object after clicked
         //scene.remove(intersects[0].object);
         //"move" to trash so that that location won't trigger a collision after object removed
@@ -127,6 +165,45 @@ function onDocumentMouseDown( event ) {
         //movedObj.position.set(99999,9999,9999);
 
     }
+
+}
+
+function winner(){
+
+    winScene = new THREE.Scene();
+
+    var loader = new THREE.FontLoader();
+    loader.load( 'Immortal_Regular.json', function ( font ) {
+
+        var textGeometry = new THREE.TextGeometry( "text", {
+
+            font: font,
+
+            size: 50,
+            height: 10,
+            curveSegments: 12,
+
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelEnabled: true
+
+        });
+
+        var textMaterial = new THREE.MeshPhongMaterial(
+            { color: 0xff0000, specular: 0xffffff }
+        );
+
+        var mesh = new THREE.Mesh( textGeometry, textMaterial );
+
+        scene.add( mesh );
+
+    });
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+    document.body.appendChild( renderer.domElement );
+
 
 }
 
