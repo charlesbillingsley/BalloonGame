@@ -1,8 +1,11 @@
 
 let scene, camera, renderer;
 let geometry, material, mesh;
-let cubeGeo, cubeMat;
+let cubeGeo1, cubeMat1, goodCube1;
+let dartGeo, dartMat, dart;
 let torGeo, torMat, torus;
+let dartBox, cubeBox1, cubeBox2;
+let scoreChangeNeeded;
 let mouse, raycaster;
 let score;
 let gui;
@@ -20,61 +23,69 @@ function init() {
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
 
+    //Dart
+
+    dartGeo = new THREE.BoxGeometry(20, 40, 20, 20);
+    dartMat = new THREE.MeshPhongMaterial({color: 0xffffff});
+    dart = new THREE.Mesh(dartGeo, dartMat);
+    dart.rotateX(-20);
+    scene.add(dart);
+    dartBox = new THREE.Box3().setFromObject(dart);
+
+
     /* Balloon Stand Model */
 
     let loader = new THREE.ObjectLoader();
     loader.load("models/stand.json",function ( object ) {
         object.scale.set( 6000, 6000, 6000 );
+        //object.translateX(-400);
         object.translateY(-400);
+        //object.translateZ(950);
         object.rotateY(1.57);
         scene.add( object );
     });
 
-    /* Balloon Stand Model */
-
-    loader.load("models/stand.json",function ( object ) {
-        object.scale.set( 6000, 6000, 6000 );
-        object.translateX(-1000);
-        object.translateY(-400);
-        object.translateZ(-1500);
-        object.rotateY(-3.5);
-        scene.add( object );
-    });
-
-    loader.load("models/stand.json",function ( object ) {
-        object.scale.set( 6000, 6000, 6000 );
-        object.translateX(1000);
-        object.translateY(-400);
-        object.translateZ(-1500);
-        object.rotateY(.5);
-        scene.add( object );
-    });
-
-    for (let i = 0; i < 7; i++) {
+    /*for (let i = 0; i < 7; i++) {
         cubeGeo = new THREE.BoxGeometry(50, 50, 50);
         cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
-        let goodCube = new THREE.Mesh(cubeGeo, cubeMat);
+        goodCube = new THREE.Mesh(cubeGeo, cubeMat);
         goodCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
         goodCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
         scene.add(goodCube);
         objects.push(goodCube);
         popableBalloons.push(goodCube);
-    }
+        cubeBox1 = new THREE.Box3().setFromObject(goodCube);
+    }*/
 
-    cubeGeo = new THREE.BoxGeometry(1000000, 1, 100000);
-    cubeMat = new THREE.MeshLambertMaterial({color: 0xA0522D});
-    let ground = new THREE.Mesh(cubeGeo, cubeMat);
-    ground.translateY(-402);
-    scene.add(ground);
-    objects.push(ground);
+    cubeGeo1 = new THREE.BoxGeometry(50, 50, 50);
+    cubeMat1 = new THREE.MeshPhongMaterial({color: 0xff0000});
+    goodCube1 = new THREE.Mesh(cubeGeo1, cubeMat1);
+    goodCube1.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
+    goodCube1.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
+    scene.add(goodCube1);
+    objects.push(goodCube1);
+    popableBalloons.push(goodCube1);
+    cubeBox1 = new THREE.Box3().setFromObject(goodCube1);
+
+    cubeGeo2 = new THREE.BoxGeometry(50, 50, 50);
+    cubeMat2 = new THREE.MeshPhongMaterial({color: 0xff0000});
+    goodCube2 = new THREE.Mesh(cubeGeo2, cubeMat2);
+    goodCube2.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
+    goodCube2.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
+    scene.add(goodCube2);
+    objects.push(goodCube2);
+    popableBalloons.push(goodCube2);
+    cubeBox2 = new THREE.Box3().setFromObject(goodCube1);
+
+    torGeo = new THREE.TorusGeometry(200, 100, 20);
+    torMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
+    torus = new THREE.Mesh(torGeo, torMat);
+    //scene.add(torus);
+    objects.push(torus);
 
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, 40, 200);
     scene.add(lightOne);
-
-    //MyWheel = new Wheel(5);
-    //scene.add(MyWheel);
-    //objects.push(MyWheel);
 
     score = 0;
 
@@ -109,6 +120,25 @@ function init() {
         if (key.keyCode == 32) {
             controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
         }
+        if (key.keyCode == 87) { //w
+            dart.translateY(20);
+        }
+        if (key.keyCode == 65) { //a
+            dart.translateX(-20);
+        }
+        if (key.keyCode == 83) { //s
+            dart.translateY(-20);
+        }
+        if (key.keyCode == 68) { //d
+            dart.translateX(20);
+        }
+        if (key.keyCode == 82) { //r
+            dart.translateZ(20);
+        }
+        if (key.keyCode == 70) { //f
+            dart.translateZ(-20);
+        }
+
     };
 
     controls.enableRotate = false;
@@ -222,44 +252,82 @@ function onDocumentMouseDown( event ) {
 
 }
 
-// function winner(){
-//
-//     winScene = new THREE.Scene();
-//
-//     let loader = new THREE.FontLoader();
-//     loader.load( 'fonts/Immortal_Regular.json', function ( font ) {
-//
-//         let textGeometry = new THREE.TextGeometry( "text", {
-//
-//             font: font,
-//
-//             size: 50,
-//             height: 10,
-//             curveSegments: 12,
-//
-//             bevelThickness: 1,
-//             bevelSize: 1,
-//             bevelEnabled: true
-//
-//         });
-//
-//         let textMaterial = new THREE.MeshPhongMaterial(
-//             { color: 0xff0000, specular: 0xffffff }
-//         );
-//
-//         let mesh = new THREE.Mesh( textGeometry, textMaterial );
-//
-//         scene.add( mesh );
-//
-//     });
-//
-//     renderer = new THREE.WebGLRenderer();
-//     renderer.setSize( window.innerWidth, window.innerHeight );
-//
-//     document.body.appendChild( renderer.domElement );
-//
-//
-// }
+function update(){
+
+    dartBox.setFromObject(dart);
+    cubeBox1.setFromObject(goodCube1);
+    cubeBox2.setFromObject(goodCube2);
+
+    var collision1 = dartBox.intersectsBox(cubeBox1);
+    var collision2 = dartBox.intersectsBox(cubeBox2);
+
+    if(collision1){
+        scoreChangeNeeded = true;
+        removeObject(goodCube1);
+    }
+    if(collision2){
+        scoreChangeNeeded = true;
+        removeObject(goodCube2);
+    }
+
+    if(scoreChangeNeeded){
+        updateScore(true);
+    }
+}
+
+function removeObject(object) {
+    scene.remove(object);
+    object.position.set(1001,1001,1001); //trash
+}
+
+function updateScore(point) {
+    if (point == true) {
+        score++;
+    }
+    else{
+        score--;
+    }
+    scoreChangeNeeded = false;
+
+    document.getElementById("score").textContent="Score :" + score;
+    if (score == 2) {
+
+        score = 0;
+
+        for (let mesh in popableBalloons) {
+            let balloon = popableBalloons[mesh];
+            scene.remove(balloon);
+        }
+        scene.remove(dart);
+
+        let loader = new THREE.FontLoader();
+        loader.load('fonts/Immortal_Regular.json', function (font) {
+
+            let textGeometry = new THREE.TextGeometry("You Won!", {
+
+                font: font,
+
+                size: 100,
+                height: 30,
+                curveSegments: 20,
+
+                bevelThickness: 3,
+                bevelSize: 3,
+                bevelEnabled: true
+
+            });
+
+            let textMaterial = new THREE.MeshPhongMaterial(
+                {color: 0xff0000, specular: 0xffffff}
+            );
+
+            let text = new THREE.Mesh(textGeometry, textMaterial);
+            text.translateX(-370);
+            scene.add(text);
+
+        });
+    }
+}
 
 function animate() {
 
@@ -270,7 +338,7 @@ function animate() {
         balloon.rotation.x += 0.01;
         balloon.rotation.y += 0.02;
     }
-    
+    update();
     renderer.render( scene, camera );
 
 }
