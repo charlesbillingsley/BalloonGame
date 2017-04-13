@@ -40,7 +40,7 @@ function init() {
     torGeo = new THREE.TorusGeometry(200, 100, 20);
     torMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
     torus = new THREE.Mesh(torGeo, torMat);
-    scene.add(torus);
+    //scene.add(torus);
     objects.push(torus);
 
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
@@ -50,6 +50,18 @@ function init() {
     //MyWheel = new Wheel(5);
     //scene.add(MyWheel);
     //objects.push(MyWheel);
+
+    /* Balloon Stand Model */
+
+    var loader = new THREE.ObjectLoader();
+    loader.load("Models/stand.json",function ( object ) {
+        object.scale.set( 200, 200, 200 );
+        //object.translateX(-400);
+        object.translateY(-20);
+        object.translateZ(950);
+        object.rotateY(1.6);
+        scene.add( object );
+    });
 
     score = 0;
 
@@ -129,7 +141,7 @@ function onDocumentMouseDown( event ) {
             scene.remove(mesh);
 
             var loader = new THREE.FontLoader();
-            loader.load( 'Immortal_Regular.json', function ( font ) {
+            loader.load( 'fonts/Immortal_Regular.json', function ( font ) {
 
                 var textGeometry = new THREE.TextGeometry( "You Won!", {
 
@@ -173,7 +185,7 @@ function winner(){
     winScene = new THREE.Scene();
 
     var loader = new THREE.FontLoader();
-    loader.load( 'Immortal_Regular.json', function ( font ) {
+    loader.load( 'fonts/Immortal_Regular.json', function ( font ) {
 
         var textGeometry = new THREE.TextGeometry( "text", {
 
