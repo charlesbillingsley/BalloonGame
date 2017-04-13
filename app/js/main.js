@@ -1,12 +1,13 @@
 
-var scene, camera, renderer;
-var geometry, material, mesh;
-var cubeGeo, cubeMat, goodCube;
-var torGeo, torMat, torus;
-var mouse, raycaster;
-var score;
-var gui;
-var objects = [];
+let scene, camera, renderer;
+let geometry, material, mesh;
+let cubeGeo, cubeMat;
+let torGeo, torMat, torus;
+let mouse, raycaster;
+let score;
+let gui;
+let objects = [];
+let popableBalloons = [];
 
 init();
 animate();
@@ -19,20 +20,20 @@ function init() {
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
 
-    geometry = new THREE.BoxGeometry( 50, 50, 50 );
-    material = new THREE.MeshPhongMaterial( { color: 0xff0000} );
-
-    mesh = new THREE.Mesh( geometry, material );
-    mesh.translateY(-60);
-    mesh.translateX(40);
-    scene.add( mesh );
-    objects.push(mesh);
+    // geometry = new THREE.BoxGeometry( 50, 50, 50 );
+    // material = new THREE.MeshPhongMaterial( { color: 0xff0000} );
+    //
+    // mesh = new THREE.Mesh( geometry, material );
+    // mesh.translateY(-60);
+    // mesh.translateX(40);
+    // scene.add( mesh );
+    // objects.push(mesh);
 
 
     /* Balloon Stand Model */
 
-    var loader = new THREE.ObjectLoader();
-    loader.load("Models/stand.json",function ( object ) {
+    let loader = new THREE.ObjectLoader();
+    loader.load("models/stand.json",function ( object ) {
         object.scale.set( 6000, 6000, 6000 );
         //object.translateX(-400);
         object.translateY(-400);
@@ -41,13 +42,16 @@ function init() {
         scene.add( object );
     });
 
-    cubeGeo = new THREE.BoxGeometry( 50, 50, 50);
-    cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
-    goodCube = new THREE.Mesh( cubeGeo, cubeMat);
-    goodCube.translateX(-70);
-    goodCube.translateY(40);
-    scene.add(goodCube);
-    objects.push(goodCube);
+    for (let i = 0; i < 7; i++) {
+        cubeGeo = new THREE.BoxGeometry(50, 50, 50);
+        cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
+        let goodCube = new THREE.Mesh(cubeGeo, cubeMat);
+        goodCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
+        goodCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
+        scene.add(goodCube);
+        objects.push(goodCube);
+        popableBalloons.push(goodCube);
+    }
 
     torGeo = new THREE.TorusGeometry(200, 100, 20);
     torMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
@@ -68,7 +72,7 @@ function init() {
     gui = new dat.GUI({
         height: 100
     });
-    var parameters =
+    let parameters =
         {
             a: score, // numeric
 
@@ -86,16 +90,17 @@ function init() {
 
     /* Controls */
 
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    let controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
     controls.enableZoom = true;
+    controls.enableRotate = true;
 
     document.body.onkeyup = function (key) {
         if (key.keyCode == 32) {
             controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
         }
-    }
+    };
 
     controls.enableRotate = false;
 
@@ -111,6 +116,13 @@ function init() {
 
 }
 
+/**
+ * @param event                 The event.
+ * @param event.touches         The event's touches array
+ * @param event.preventDefault  prevents the default event
+ * @param event.clientX         x
+ * @param event.clientY         y
+ */
 function onDocumentTouchStart( event ) {
 
     event.preventDefault();
@@ -130,7 +142,7 @@ function onDocumentMouseDown( event ) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    var intersects = raycaster.intersectObjects(objects);
+    let intersects = raycaster.intersectObjects(objects);
 
     if (intersects.length > 0) {
         if(intersects[0].object == mesh) {
@@ -138,11 +150,11 @@ function onDocumentMouseDown( event ) {
             score--;
             document.getElementById("score").textContent="Score :" + score;
         }
-        if(intersects[0].object == goodCube){
+        if(popableBalloons.includes(intersects[0].object)){
             intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
             score++;
             document.getElementById("score").textContent="Score :" + score;
-            console.log("Score: " + score);
+            Console.log("Score: " + score);
         }
         if(intersects[0].object == torus){
             intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
@@ -154,14 +166,17 @@ function onDocumentMouseDown( event ) {
 
             score = 0;
 
-            scene.remove(goodCube);
+            for (let mesh in popableBalloons) {
+                let balloon = popableBalloons[mesh];
+                scene.remove(balloon);
+            }
             scene.remove(torus);
             scene.remove(mesh);
 
-            var loader = new THREE.FontLoader();
+            let loader = new THREE.FontLoader();
             loader.load( 'fonts/Immortal_Regular.json', function ( font ) {
 
-                var textGeometry = new THREE.TextGeometry( "You Won!", {
+                let textGeometry = new THREE.TextGeometry( "You Won!", {
 
                     font: font,
 
@@ -175,11 +190,11 @@ function onDocumentMouseDown( event ) {
 
                 });
 
-                var textMaterial = new THREE.MeshPhongMaterial(
+                let textMaterial = new THREE.MeshPhongMaterial(
                     { color: 0xff0000, specular: 0xffffff }
                 );
 
-                var text = new THREE.Mesh( textGeometry, textMaterial );
+                let text = new THREE.Mesh( textGeometry, textMaterial );
                 text.translateX(-370);
                 scene.add( text );
 
@@ -191,64 +206,62 @@ function onDocumentMouseDown( event ) {
         //TODO: Potential code to remove object after clicked
         //scene.remove(intersects[0].object);
         //"move" to trash so that that location won't trigger a collision after object removed
-       //var movedObj = intersects[0].object;
+       //let movedObj = intersects[0].object;
         //movedObj.position.set(99999,9999,9999);
 
     }
 
 }
 
-function winner(){
-
-    winScene = new THREE.Scene();
-
-    var loader = new THREE.FontLoader();
-    loader.load( 'fonts/Immortal_Regular.json', function ( font ) {
-
-        var textGeometry = new THREE.TextGeometry( "text", {
-
-            font: font,
-
-            size: 50,
-            height: 10,
-            curveSegments: 12,
-
-            bevelThickness: 1,
-            bevelSize: 1,
-            bevelEnabled: true
-
-        });
-
-        var textMaterial = new THREE.MeshPhongMaterial(
-            { color: 0xff0000, specular: 0xffffff }
-        );
-
-        var mesh = new THREE.Mesh( textGeometry, textMaterial );
-
-        scene.add( mesh );
-
-    });
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
-    document.body.appendChild( renderer.domElement );
-
-
-}
+// function winner(){
+//
+//     winScene = new THREE.Scene();
+//
+//     let loader = new THREE.FontLoader();
+//     loader.load( 'fonts/Immortal_Regular.json', function ( font ) {
+//
+//         let textGeometry = new THREE.TextGeometry( "text", {
+//
+//             font: font,
+//
+//             size: 50,
+//             height: 10,
+//             curveSegments: 12,
+//
+//             bevelThickness: 1,
+//             bevelSize: 1,
+//             bevelEnabled: true
+//
+//         });
+//
+//         let textMaterial = new THREE.MeshPhongMaterial(
+//             { color: 0xff0000, specular: 0xffffff }
+//         );
+//
+//         let mesh = new THREE.Mesh( textGeometry, textMaterial );
+//
+//         scene.add( mesh );
+//
+//     });
+//
+//     renderer = new THREE.WebGLRenderer();
+//     renderer.setSize( window.innerWidth, window.innerHeight );
+//
+//     document.body.appendChild( renderer.domElement );
+//
+//
+// }
 
 function animate() {
 
     requestAnimationFrame( animate );
 
-    mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.02;
-
-    goodCube.rotation.x += 0.01;
-    goodCube.rotation.y +=0.02;
-
-    torus.rotation.x += 0.01;
-    torus.rotation.y += 0.02;
+    for (let mesh in popableBalloons) {
+        let balloon = popableBalloons[mesh];
+        balloon.rotation.x += 0.01;
+        balloon.rotation.y += 0.02;
+    }
+    
     renderer.render( scene, camera );
 
 }
