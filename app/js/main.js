@@ -29,11 +29,24 @@ function init() {
     objects.push(mesh);
 
 
+    /* Balloon Stand Model */
+
+    var loader = new THREE.ObjectLoader();
+    loader.load("Models/stand.json",function ( object ) {
+        object.scale.set( 300, 300, 300 );
+        //object.translateX(-400);
+        object.translateY(-20);
+        object.translateZ(950);
+        object.rotateY(1.6);
+        scene.add( object );
+    });
+
     cubeGeo = new THREE.BoxGeometry( 200, 200, 200);
     cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
     goodCube = new THREE.Mesh( cubeGeo, cubeMat);
     goodCube.translateX(-400);
-    goodCube.translateY(400);
+    goodCube.translateY(300);
+    goodCube.translateZ(100);
     scene.add(goodCube);
     objects.push(goodCube);
 
@@ -50,18 +63,6 @@ function init() {
     //MyWheel = new Wheel(5);
     //scene.add(MyWheel);
     //objects.push(MyWheel);
-
-    /* Balloon Stand Model */
-
-    var loader = new THREE.ObjectLoader();
-    loader.load("Models/stand.json",function ( object ) {
-        object.scale.set( 200, 200, 200 );
-        //object.translateX(-400);
-        object.translateY(-20);
-        object.translateZ(950);
-        object.rotateY(1.6);
-        scene.add( object );
-    });
 
     score = 0;
 
@@ -81,6 +82,16 @@ function init() {
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
+
+    //container.appendChild(renderer.domElement);
+
+    /* Controls */
+
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = false;
+
 
     document.body.appendChild( renderer.domElement );
 
