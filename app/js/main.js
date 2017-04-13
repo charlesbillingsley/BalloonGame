@@ -42,12 +42,12 @@ function init() {
         scene.add( object );
     });
 
-    cubeGeo = new THREE.BoxGeometry( 200, 200, 200);
+    cubeGeo = new THREE.BoxGeometry( 2, 2, 2);
     cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
     goodCube = new THREE.Mesh( cubeGeo, cubeMat);
-    //goodCube.translateX(4);
-    //goodCube.translateY(3);
-    //goodCube.translateZ(955);
+    goodCube.translateX(-4);
+    goodCube.translateY(3);
+    goodCube.translateZ(955);
     scene.add(goodCube);
     objects.push(goodCube);
 
