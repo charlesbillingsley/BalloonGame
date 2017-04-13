@@ -37,7 +37,7 @@ function init() {
         //object.translateX(-400);
         object.translateY(-400);
         //object.translateZ(950);
-        object.rotateY(1.6);
+        object.rotateY(1.57);
         scene.add( object );
     });
 
@@ -89,7 +89,15 @@ function init() {
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
-    controls.enableZoom = false;
+    controls.enableZoom = true;
+
+    document.body.onkeyup = function (key) {
+        if (key.keyCode == 32) {
+            controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
+        }
+    }
+
+    controls.enableRotate = false;
 
 
     document.body.appendChild( renderer.domElement );
