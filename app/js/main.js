@@ -20,25 +20,33 @@ function init() {
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
 
-    // geometry = new THREE.BoxGeometry( 50, 50, 50 );
-    // material = new THREE.MeshPhongMaterial( { color: 0xff0000} );
-    //
-    // mesh = new THREE.Mesh( geometry, material );
-    // mesh.translateY(-60);
-    // mesh.translateX(40);
-    // scene.add( mesh );
-    // objects.push(mesh);
-
-
     /* Balloon Stand Model */
 
     let loader = new THREE.ObjectLoader();
     loader.load("models/stand.json",function ( object ) {
         object.scale.set( 6000, 6000, 6000 );
-        //object.translateX(-400);
         object.translateY(-400);
-        //object.translateZ(950);
         object.rotateY(1.57);
+        scene.add( object );
+    });
+
+    /* Balloon Stand Model */
+
+    loader.load("models/stand.json",function ( object ) {
+        object.scale.set( 6000, 6000, 6000 );
+        object.translateX(-1000);
+        object.translateY(-400);
+        object.translateZ(-1500);
+        object.rotateY(-3.5);
+        scene.add( object );
+    });
+
+    loader.load("models/stand.json",function ( object ) {
+        object.scale.set( 6000, 6000, 6000 );
+        object.translateX(1000);
+        object.translateY(-400);
+        object.translateZ(-1500);
+        object.rotateY(.5);
         scene.add( object );
     });
 
@@ -53,11 +61,12 @@ function init() {
         popableBalloons.push(goodCube);
     }
 
-    torGeo = new THREE.TorusGeometry(200, 100, 20);
-    torMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
-    torus = new THREE.Mesh(torGeo, torMat);
-    //scene.add(torus);
-    objects.push(torus);
+    cubeGeo = new THREE.BoxGeometry(1000000, 1, 100000);
+    cubeMat = new THREE.MeshLambertMaterial({color: 0xA0522D});
+    let ground = new THREE.Mesh(cubeGeo, cubeMat);
+    ground.translateY(-402);
+    scene.add(ground);
+    objects.push(ground);
 
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, 40, 200);
