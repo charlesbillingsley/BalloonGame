@@ -34,20 +34,20 @@ function init() {
 
     var loader = new THREE.ObjectLoader();
     loader.load("Models/stand.json",function ( object ) {
-        object.scale.set( 300, 300, 300 );
+        object.scale.set( 6000, 6000, 6000 );
         //object.translateX(-400);
-        object.translateY(-20);
-        object.translateZ(950);
+        object.translateY(-400);
+        //object.translateZ(950);
         object.rotateY(1.6);
         scene.add( object );
     });
 
-    cubeGeo = new THREE.BoxGeometry( 2, 2, 2);
+    cubeGeo = new THREE.BoxGeometry( 200, 200, 200);
     cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
     goodCube = new THREE.Mesh( cubeGeo, cubeMat);
-    goodCube.translateX(4);
-    goodCube.translateY(3);
-    goodCube.translateZ(955);
+    //goodCube.translateX(4);
+    //goodCube.translateY(3);
+    //goodCube.translateZ(955);
     scene.add(goodCube);
     objects.push(goodCube);
 
@@ -58,7 +58,7 @@ function init() {
     objects.push(torus);
 
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-    lightOne.position.set(10, 40, 100);
+    lightOne.position.set(10, 40, 200);
     scene.add(lightOne);
 
     //MyWheel = new Wheel(5);
