@@ -174,7 +174,7 @@ function onDocumentMouseDown( event ) {
                 );
 
                 var text = new THREE.Mesh( textGeometry, textMaterial );
-
+                text.translateX(-370);
                 scene.add( text );
 
             });
