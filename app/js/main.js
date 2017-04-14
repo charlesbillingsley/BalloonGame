@@ -10,7 +10,7 @@ let score;
 let shootDart;
 let gui;
 let objects = [];
-let popableBalloons = [];
+let poppableBalloons = [];
 let cubeBoxes = [];
 
 init();
@@ -24,7 +24,7 @@ function init() {
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
 
-    //Dart
+    /* Dart */
 
     dartGeo = new THREE.BoxGeometry(20, 40, 20, 20);
     dartMat = new THREE.MeshPhongMaterial({color: 0xffffff});
@@ -40,9 +40,7 @@ function init() {
     let loader = new THREE.ObjectLoader();
     loader.load("models/stand.json",function ( object ) {
         object.scale.set( 6000, 6000, 6000 );
-        //object.translateX(-400);
         object.translateY(-400);
-        //object.translateZ(950);
         object.rotateY(1.57);
         scene.add( object );
     });
@@ -76,7 +74,7 @@ function init() {
         goodCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
         scene.add(goodCube);
         objects.push(goodCube);
-        popableBalloons.push(goodCube);
+        poppableBalloons.push(goodCube);
         let cubeBox = new THREE.Box3().setFromObject(goodCube);
         cubeBoxes.push(cubeBox);
     }
@@ -111,8 +109,6 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
 
-    //container.appendChild(renderer.domElement);
-
     /* Controls */
 
     let controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -122,7 +118,7 @@ function init() {
     controls.enableRotate = true;
     controls.enableRotate = false;
 
-    document.body.onkeyup = function (key) {
+    document.body.onkeydown = function (key) {
         if (key.keyCode == 32) {
             controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
         }
@@ -176,10 +172,10 @@ function update(){
     dartBox.setFromObject(dart);
 
     for (let i = 0; i < cubeBoxes.length; i++) {
-        cubeBoxes[i].setFromObject(popableBalloons[i]);
+        cubeBoxes[i].setFromObject(poppableBalloons[i]);
 
         if (dartBox.intersectsBox(cubeBoxes[i])) {
-            removeObject(popableBalloons[i]);
+            removeObject(poppableBalloons[i]);
             updateScore(true);
             resetDart();
         }
@@ -219,8 +215,8 @@ function updateScore(point) {
 
         score = 0;
 
-        for (let mesh in popableBalloons) {
-            let balloon = popableBalloons[mesh];
+        for (let mesh in poppableBalloons) {
+            let balloon = poppableBalloons[mesh];
             scene.remove(balloon);
         }
         scene.remove(dart);
@@ -258,8 +254,8 @@ function animate() {
 
     requestAnimationFrame( animate );
 
-    for (let mesh in popableBalloons) {
-        let balloon = popableBalloons[mesh];
+    for (let mesh in poppableBalloons) {
+        let balloon = poppableBalloons[mesh];
         balloon.rotation.x += 0.01;
         balloon.rotation.y += 0.02;
     }
