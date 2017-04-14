@@ -12,6 +12,7 @@ let gui;
 let objects = [];
 let poppableBalloons = [];
 let cubeBoxes = [];
+let DART_X = 0, DART_Y = -100, DART_Z = 300;
 
 init();
 animate();
@@ -23,6 +24,7 @@ function init() {
 
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
+    camera.position.y = 250;
 
     /* Dart */
 
@@ -30,7 +32,7 @@ function init() {
     dartMat = new THREE.MeshPhongMaterial({color: 0xffffff});
     dart = new THREE.Mesh(dartGeo, dartMat);
     dart.rotateX(-20);
-    dart.position.set(0,0,100);
+    dart.position.set(DART_X, DART_Y, DART_Z);
     scene.add(dart);
     dartBox = new THREE.Box3().setFromObject(dart);
 
@@ -119,28 +121,30 @@ function init() {
     controls.enableRotate = false;
 
     document.body.onkeydown = function (key) {
-        if (key.keyCode == 32) {
-            controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
+        switch (key.keyCode) {
+            case 32: // Space Bar
+                controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
+                break;
+            case 87: // w
+                dart.position.y += 20;
+                break;
+            case 65: // a
+                dart.position.x -= 20;
+                break;
+            case 83: // s
+                dart.position.y -=20;
+                break;
+            case 68: // d
+                dart.position.x += 20;
+                break;
+            /* Used for debugging (or cheating... I'm not a cop!) */
+            // case 82: // r
+            //     dart.position.z +=20;
+            //     break;
+            // case 70: // f
+            //     dart.position.z  -=20;
+            //     break;
         }
-        if (key.keyCode == 87) { //w
-            dart.position.y += 20;
-        }
-        if (key.keyCode == 65) { //a
-            dart.position.x -= 20;
-        }
-        if (key.keyCode == 83) { //s
-            dart.position.y -=20;
-        }
-        if (key.keyCode == 68) { //d
-            dart.position.x += 20;
-        }
-        if (key.keyCode == 82) { //r
-            dart.position.z +=20;
-        }
-        if (key.keyCode == 70) { //f
-            dart.position.z  -=20;
-        }
-
     };
 
     document.body.appendChild( renderer.domElement );
@@ -186,13 +190,14 @@ function update(){
     }
 
     if(shootDart){
-        dart.position.z += -2;
+        dart.position.z += -10;
+        dart.position.y += -2;
         dart.rotateY(0.1);
     }
 }
 
 function resetDart(){
-    dart.position.set(0,0,100);
+    dart.position.set(DART_X, DART_Y, DART_Z);
     shootDart = false;
 }
 
