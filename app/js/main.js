@@ -12,7 +12,8 @@ let gui;
 let objects = [];
 let poppableBalloons = [];
 let cubeBoxes = [];
-let DART_X = 0, DART_Y = -100, DART_Z = 300;
+let DART_X = 0, DART_Y = -100, DART_Z = 400;
+let guiParameters
 
 init();
 animate();
@@ -47,26 +48,25 @@ function init() {
         scene.add( object );
     });
 
+    for (let i = 0; i < 2; i++) {
+        loader.load("models/stand.json",function ( object ) {
+            object.scale.set( 6000, 6000, 6000 );
+            object.translateX(-1000 + (-500 * i));
+            object.translateY(-400);
+            object.translateZ(-1500 + (1000 * i));
+            object.rotateY(-3.5);
+            scene.add( object );
+        });
 
-    /* Balloon Stand Model */
-
-    loader.load("models/stand.json",function ( object ) {
-        object.scale.set( 6000, 6000, 6000 );
-        object.translateX(-1000);
-        object.translateY(-400);
-        object.translateZ(-1500);
-        object.rotateY(-3.5);
-        scene.add( object );
-    });
-
-    loader.load("models/stand.json",function ( object ) {
-        object.scale.set( 6000, 6000, 6000 );
-        object.translateX(1000);
-        object.translateY(-400);
-        object.translateZ(-1500);
-        object.rotateY(.5);
-        scene.add( object );
-    });
+        loader.load("models/stand.json",function ( object ) {
+                object.scale.set( 6000, 6000, 6000 );
+                object.translateX(1000 + (500 * i));
+                object.translateY(-400);
+                object.translateZ(-1500 + (1000 * i));
+                object.rotateY(.5);
+                scene.add( object );
+            });
+    }
 
     for (let i = 0; i < 7; i++) {
         let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
@@ -97,16 +97,25 @@ function init() {
     gui = new dat.GUI({
         height: 100
     });
-    let parameters =
+
+    guiParameters =
         {
-            a: score, // numeric
+            gameScore: score, // numeric
+            wControl: 'w',
+            sControl: 's',
+            aControl: 'a',
+            dControl: 'd',
+            shootControl: 'Space or Click'
 
         };
-    // gui.add( parameters )
-    gui.add( parameters, 'a' ).name('Score').listen();
+    gui.add( guiParameters, 'gameScore' ).name('Score').listen();
+    gui.add( guiParameters, 'wControl').name('Move Dart Up');
+    gui.add( guiParameters, 'sControl').name('Move Dart Down');
+    gui.add( guiParameters, 'aControl').name('Move Dart Left');
+    gui.add( guiParameters, 'dControl').name('Move Dart Right');
+    gui.add( guiParameters, 'shootControl').name('Shoot Dart');
     gui.open();
-
-
+    guiParameters.gameScore = 0;
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -124,6 +133,8 @@ function init() {
         switch (key.keyCode) {
             case 32: // Space Bar
                 controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
+                shootDart = true;
+                update();
                 break;
             case 87: // w
                 dart.position.y += 20;
@@ -190,8 +201,8 @@ function update(){
     }
 
     if(shootDart){
-        dart.position.z += -10;
-        dart.position.y += -2;
+        dart.position.z += -20;
+        dart.position.y += -6;
         dart.rotateY(0.1);
     }
 }
@@ -209,13 +220,14 @@ function removeObject(object) {
 function updateScore(point) {
     if (point == true) {
         score++;
+        guiParameters.gameScore++;
     }
     else{
         score--;
     }
     scoreChangeNeeded = false;
 
-    document.getElementById("score").textContent="Score :" + score;
+    //document.getElementById("score").textContent="Score :" + score;
     if (score == 7) {
 
         score = 0;
