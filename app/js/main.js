@@ -139,7 +139,7 @@ function init() {
 
     /* Ground */
     let cubeGeo = new THREE.BoxGeometry(1000000, 1, 100000);
-    let cubeMat = new THREE.MeshLambertMaterial({color: 0xF5DEB3});
+    let cubeMat = new THREE.MeshLambertMaterial({color: 0xc37a3c});
     let ground = new THREE.Mesh(cubeGeo, cubeMat);
     ground.translateY(-402);
     scene.add(ground);
