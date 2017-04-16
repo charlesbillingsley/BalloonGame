@@ -18,6 +18,10 @@ let DART_X = 0, DART_Y = -100, DART_Z = 400;
 let guiParameters;
 let numOfGoodBalloons = 7;
 let numOfPoppedGoodBalloons = 0;
+let alertLight;
+let alertLightOn = false;
+let alertLightCounter = 0;
+const alertLightDuration = 5;
 
 init();
 animate();
@@ -106,9 +110,14 @@ function init() {
     scene.add(ground);
     objects.push(ground);
 
+    /* Light */
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, 40, 200);
     scene.add(lightOne);
+
+    /* Alert Light */
+    alertLight = new THREE.DirectionalLight(0xFF0000, 1.0);
+    alertLight.position.set(10, 40, 200);
 
     score = 0;
 
@@ -217,6 +226,8 @@ function update(){
 
         if (dartBox.intersectsBox(badCubeBoxes[i])) {
             removeObject(badBalloons[i]);
+            scene.add(alertLight);
+            alertLightOn = true;
             updateScore(false);
             resetDart();
         }
@@ -230,6 +241,16 @@ function update(){
         dart.position.z += -20;
         dart.position.y += -6;
         dart.rotateY(0.1);
+    }
+
+    if (alertLightOn) {
+        if (alertLightCounter > alertLightDuration) {
+            scene.remove(alertLight);
+            alertLightOn = false;
+            alertLightCounter = 0;
+        } else {
+            alertLightCounter++;
+        }
     }
 }
 
@@ -266,6 +287,7 @@ function updateScore(point) {
         for (let mesh in badBalloons) {
             let balloon = badBalloons[mesh];
             scene.remove(balloon);
+
         }
         scene.remove(dart);
 
@@ -313,8 +335,8 @@ function animate() {
         balloon.rotation.x += 0.01;
         balloon.rotation.y += 0.02;
     }
+
     update();
     renderer.render( scene, camera );
-
 }
 
