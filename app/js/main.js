@@ -16,8 +16,8 @@ let goodCubeBoxes = [];
 let badCubeBoxes = [];
 let DART_X = 0, DART_Y = -100, DART_Z = 500;
 let guiParameters;
-let numOfGoodBalloons = 7;
-let numOfBadBalloons = 3;
+let numOfGoodBalloons = 3;
+let numOfBadBalloons = 2;
 let numOfPoppedGoodBalloons = 0;
 let alertLight;
 let alertLightOn = false;
@@ -77,6 +77,36 @@ function init() {
             });
     }
 
+    /* Balloon Pop Text */
+    let textLoader = new THREE.FontLoader();
+    textLoader.load('fonts/Immortal_Regular.json', function (font) {
+
+        let textGeometry = new THREE.TextGeometry("Balloon \n Pop!", {
+
+            font: font,
+
+            size: 80,
+            height: 30,
+            curveSegments: 20,
+
+            bevelThickness: 3,
+            bevelSize: 3,
+            bevelEnabled: true
+
+        });
+
+
+        let textMaterial = new THREE.MeshPhongMaterial(
+            {color: 0xff0000, specular: 0xffffff}
+        );
+
+        let text = new THREE.Mesh(textGeometry, textMaterial);
+        text.translateX(-190);
+        text.translateY(550);
+        text.translateZ(-20);
+        scene.add(text);
+    });
+
     /* Good Balloons */
     for (let i = 0; i < numOfGoodBalloons; i++) {
         let loader = new THREE.ObjectLoader();
@@ -94,16 +124,6 @@ function init() {
 
     /* Bad Balloons */
     for (let i = 0; i < numOfBadBalloons; i++) {
-        // let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
-        // let cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
-        // let badCube = new THREE.Mesh(cubeGeo, cubeMat);
-        // randomPlacement(badCube);
-        // scene.add(badCube);
-        // objects.push(badCube);
-        // badBalloons.push(badCube);
-        // let cubeBox = new THREE.Box3().setFromObject(badCube);
-        // badCubeBoxes.push(cubeBox);
-
         let loader = new THREE.ObjectLoader();
         loader.load("models/badBalloon/redBalloon.json",function (badCube) {
             badCube.scale.set( 4000, 4000, 4000 );
@@ -125,10 +145,18 @@ function init() {
     scene.add(ground);
     objects.push(ground);
 
-    /* Light */
+    /* Lights */
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, 40, 200);
     scene.add(lightOne);
+
+    const lightTwo = new THREE.DirectionalLight(0xFFFFFF, .3);
+    lightTwo.position.set(0, 20, 10);
+    scene.add(lightTwo);
+
+    const lightThree = new THREE.DirectionalLight(0xFFFFFF, .3);
+    lightThree.position.set(0, 50, 10);
+    scene.add(lightThree);
 
     /* Alert Light */
     alertLight = new THREE.DirectionalLight(0xFF0000, 1.0);
