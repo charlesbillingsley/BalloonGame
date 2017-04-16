@@ -4,6 +4,9 @@ let geometry, material;
 let dart;
 let dartBox;
 let scoreChangeNeeded;
+let winText;
+let winPulseSize = 0;
+let winPulseForward = true;
 let mouse, raycaster;
 let score;
 let shootDart;
@@ -19,7 +22,7 @@ let guiParameters;
 let numOfGoodBalloons = 3;
 let numOfBadBalloons = 2;
 let numOfPoppedGoodBalloons = 0;
-let alertLight;
+let alertLight, buzzer, goodTone, tada, carnival, source;
 let alertLightOn = false;
 let alertLightCounter = 0;
 const alertLightDuration = 20;
@@ -161,6 +164,32 @@ function init() {
     /* Alert Light */
     alertLight = new THREE.DirectionalLight(0xFF0000, 1.0);
     alertLight.position.set(10, 40, 200);
+
+    /* Sounds */
+    // Carnival Music
+    carnival = document.createElement('audio');
+    source = document.createElement('source');
+    source.src = 'sounds/carnival.mp3';
+    carnival.appendChild(source);
+    carnival.play();
+
+    // Bad Sound
+    buzzer = document.createElement('audio');
+    source = document.createElement('source');
+    source.src = 'sounds/badBuzzer.mp3';
+    buzzer.appendChild(source);
+
+    // Good Sound
+    goodTone = document.createElement('audio');
+    source = document.createElement('source');
+    source.src = 'sounds/goodTone.wav';
+    goodTone.appendChild(source);
+
+    // Win Sound
+    tada = document.createElement('audio');
+    source = document.createElement('source');
+    source.src = 'sounds/tada.wav';
+    tada.appendChild(source);
 
     score = 0;
 
@@ -327,6 +356,7 @@ function update(){
         if (dartBox.intersectsBox(goodCubeBoxes[i])) {
             removeObject(poppableBalloons[i]);
             numOfPoppedGoodBalloons++;
+            goodTone.play();
             updateScore(true);
             resetDart();
         }
@@ -339,6 +369,7 @@ function update(){
             removeObject(badBalloons[i]);
             scene.add(alertLight);
             alertLightOn = true;
+            buzzer.play();
             updateScore(false);
             resetDart();
         }
@@ -424,10 +455,13 @@ function updateScore(point) {
                 {color: 0xff0000, specular: 0xffffff}
             );
 
-            let text = new THREE.Mesh(textGeometry, textMaterial);
-            text.translateX(-370);
-            scene.add(text);
-
+            winText = new THREE.Mesh(textGeometry, textMaterial);
+            winText.translateX(-370);
+            scene.add(winText);
+            carnival.pause();
+            buzzer.pause();
+            goodTone.pause();
+            tada.play();
         });
     }
 }
@@ -444,6 +478,24 @@ function animate() {
     for (let mesh in badBalloons) {
         let balloon = badBalloons[mesh];
         balloon.rotation.y += 0.02;
+    }
+
+    if (winText) {
+        if (winPulseForward) {
+            if (winPulseSize < 10) {
+                winPulseSize += .1;
+                winText.position.z += .1;
+            } else {
+                winPulseForward = false;
+            }
+        } else if (!winPulseForward) {
+            if (winPulseSize > 0) {
+                winPulseSize -= .1;
+                winText.position.z -= .1;
+            } else {
+                winPulseForward = true;
+            }
+        }
     }
 
     update();
