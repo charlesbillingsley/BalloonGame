@@ -11,9 +11,13 @@ let shootDart;
 let gui;
 let objects = [];
 let poppableBalloons = [];
-let cubeBoxes = [];
+let badBalloons = [];
+let goodCubeBoxes = [];
+let badCubeBoxes = [];
 let DART_X = 0, DART_Y = -100, DART_Z = 400;
-let guiParameters
+let guiParameters;
+let numOfGoodBalloons = 7;
+let numOfPoppedGoodBalloons = 0;
 
 init();
 animate();
@@ -28,7 +32,6 @@ function init() {
     camera.position.y = 250;
 
     /* Dart */
-
     dartGeo = new THREE.BoxGeometry(20, 40, 20, 20);
     dartMat = new THREE.MeshPhongMaterial({color: 0xffffff});
     dart = new THREE.Mesh(dartGeo, dartMat);
@@ -39,7 +42,6 @@ function init() {
 
 
     /* Balloon Stand Model */
-
     let loader = new THREE.ObjectLoader();
     loader.load("models/stand.json",function ( object ) {
         object.scale.set( 6000, 6000, 6000 );
@@ -68,9 +70,10 @@ function init() {
             });
     }
 
-    for (let i = 0; i < 7; i++) {
+    /* Good Balloons */
+    for (let i = 0; i < numOfGoodBalloons; i++) {
         let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
-        let cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
+        let cubeMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
         let goodCube = new THREE.Mesh(cubeGeo, cubeMat);
         goodCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
         goodCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
@@ -78,11 +81,26 @@ function init() {
         objects.push(goodCube);
         poppableBalloons.push(goodCube);
         let cubeBox = new THREE.Box3().setFromObject(goodCube);
-        cubeBoxes.push(cubeBox);
+        goodCubeBoxes.push(cubeBox);
     }
 
-    cubeGeo = new THREE.BoxGeometry(1000000, 1, 100000);
-    cubeMat = new THREE.MeshLambertMaterial({color: 0xA0522D});
+    /* Bad Balloons */
+    for (let i = 0; i < 3; i++) {
+        let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
+        let cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
+        let badCube = new THREE.Mesh(cubeGeo, cubeMat);
+        badCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
+        badCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
+        scene.add(badCube);
+        objects.push(badCube);
+        badBalloons.push(badCube);
+        let cubeBox = new THREE.Box3().setFromObject(badCube);
+        badCubeBoxes.push(cubeBox);
+    }
+
+    /* Ground */
+    let cubeGeo = new THREE.BoxGeometry(1000000, 1, 100000);
+    let cubeMat = new THREE.MeshLambertMaterial({color: 0xA0522D});
     let ground = new THREE.Mesh(cubeGeo, cubeMat);
     ground.translateY(-402);
     scene.add(ground);
@@ -168,15 +186,12 @@ function init() {
 
 }
 function onDocumentTouchStart( event ) {
-
     event.preventDefault();
-
     onDocumentMouseDown( event );
 
 }
 
 function onDocumentMouseDown( event ) {
-
     shootDart = true;
     update();
 
@@ -186,12 +201,23 @@ function update(){
 
     dartBox.setFromObject(dart);
 
-    for (let i = 0; i < cubeBoxes.length; i++) {
-        cubeBoxes[i].setFromObject(poppableBalloons[i]);
+    for (let i = 0; i < goodCubeBoxes.length; i++) {
+        goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
 
-        if (dartBox.intersectsBox(cubeBoxes[i])) {
+        if (dartBox.intersectsBox(goodCubeBoxes[i])) {
             removeObject(poppableBalloons[i]);
+            numOfPoppedGoodBalloons++;
             updateScore(true);
+            resetDart();
+        }
+    }
+
+    for (let i = 0; i < badCubeBoxes.length; i++) {
+        badCubeBoxes[i].setFromObject(badBalloons[i]);
+
+        if (dartBox.intersectsBox(badCubeBoxes[i])) {
+            removeObject(badBalloons[i]);
+            updateScore(false);
             resetDart();
         }
     }
@@ -224,16 +250,21 @@ function updateScore(point) {
     }
     else{
         score--;
+        guiParameters.gameScore--;
     }
     scoreChangeNeeded = false;
 
     //document.getElementById("score").textContent="Score :" + score;
-    if (score == 7) {
+    if (numOfPoppedGoodBalloons == numOfGoodBalloons) {
 
         score = 0;
 
         for (let mesh in poppableBalloons) {
             let balloon = poppableBalloons[mesh];
+            scene.remove(balloon);
+        }
+        for (let mesh in badBalloons) {
+            let balloon = badBalloons[mesh];
             scene.remove(balloon);
         }
         scene.remove(dart);
@@ -273,6 +304,12 @@ function animate() {
 
     for (let mesh in poppableBalloons) {
         let balloon = poppableBalloons[mesh];
+        balloon.rotation.x += 0.01;
+        balloon.rotation.y += 0.02;
+    }
+
+    for (let mesh in badBalloons) {
+        let balloon = badBalloons[mesh];
         balloon.rotation.x += 0.01;
         balloon.rotation.y += 0.02;
     }
