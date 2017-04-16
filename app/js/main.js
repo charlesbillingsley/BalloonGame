@@ -250,11 +250,15 @@ function randomPlacement(object){
         }
     }
 
-    //if(tmpObject.position.x > 270 || tmpObject.position.x < 270){
-    //    console.log(tmpObject.position.x);
-    //    firstRecursion = false;
-    //    randomPlacement(object);
-    //}
+    if(tmpObject.position.x > 270 || tmpObject.position.x < -270){
+        firstRecursion = false;
+        randomPlacement(object);
+    }
+
+    if(tmpObject.position.y > 150 || tmpObject.position.y < -150){
+        firstRecursion = false;
+        randomPlacement(object);
+    }
 
     object.translateX(translationX);
     object.translateY(translationY);
