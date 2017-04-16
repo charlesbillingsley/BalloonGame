@@ -1,9 +1,8 @@
 
 let scene, camera, renderer;
-let geometry, material, mesh;
-// let cubeGeo1, cubeMat1, goodCube1;
-let dartGeo, dartMat, dart;
-let dartBox;//, cubeBox1, cubeBox2;
+let geometry, material;
+let dart;
+let dartBox;
 let scoreChangeNeeded;
 let mouse, raycaster;
 let score;
@@ -16,7 +15,7 @@ let poppableBalloons = [];
 let badBalloons = [];
 let goodCubeBoxes = [];
 let badCubeBoxes = [];
-let DART_X = 0, DART_Y = -100, DART_Z = 400;
+let DART_X = 0, DART_Y = -100, DART_Z = 500;
 let guiParameters;
 let numOfGoodBalloons = 7;
 let numOfPoppedGoodBalloons = 0;
@@ -38,18 +37,20 @@ function init() {
     camera.position.y = 250;
 
     /* Dart */
-    dartGeo = new THREE.BoxGeometry(20, 40, 20, 20);
-    dartMat = new THREE.MeshPhongMaterial({color: 0xffffff});
-    dart = new THREE.Mesh(dartGeo, dartMat);
-    dart.rotateX(-20);
-    dart.position.set(DART_X, DART_Y, DART_Z);
-    scene.add(dart);
-    dartBox = new THREE.Box3().setFromObject(dart);
+    let dartLoader = new THREE.ObjectLoader();
+    dartLoader.load("models/dart/dart.json",function ( object ) {
+        object.scale.set( 500, 500, 500 );
+        object.rotateY(3.15);
+        object.position.set(DART_X, DART_Y, DART_Z);
+        dart = object;
+        scene.add( dart );
+        dartBox = new THREE.Box3().setFromObject(dart);
+    });
 
 
     /* Balloon Stand Model */
     let loader = new THREE.ObjectLoader();
-    loader.load("models/stand.json",function ( object ) {
+    loader.load("models/stand/stand.json",function ( object ) {
         object.scale.set( 6000, 6000, 6000 );
         object.translateY(-400);
         object.rotateY(1.57);
@@ -57,7 +58,7 @@ function init() {
     });
 
     for (let i = 0; i < 2; i++) {
-        loader.load("models/stand.json",function ( object ) {
+        loader.load("models/stand/stand.json",function ( object ) {
             object.scale.set( 6000, 6000, 6000 );
             object.translateX(-1000 + (-500 * i));
             object.translateY(-400);
@@ -66,7 +67,7 @@ function init() {
             scene.add( object );
         });
 
-        loader.load("models/stand.json",function ( object ) {
+        loader.load("models/stand/stand.json",function ( object ) {
                 object.scale.set( 6000, 6000, 6000 );
                 object.translateX(1000 + (500 * i));
                 object.translateY(-400);
@@ -82,8 +83,6 @@ function init() {
         let cubeMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
         let goodCube = new THREE.Mesh(cubeGeo, cubeMat);
         randomPlacement(goodCube);
-        //goodCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
-        //goodCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
         scene.add(goodCube);
         objects.push(goodCube);
         poppableBalloons.push(goodCube);
@@ -97,8 +96,6 @@ function init() {
         let cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
         let badCube = new THREE.Mesh(cubeGeo, cubeMat);
         randomPlacement(badCube);
-        //badCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
-        //badCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
         scene.add(badCube);
         objects.push(badCube);
         badBalloons.push(badCube);
@@ -108,7 +105,7 @@ function init() {
 
     /* Ground */
     let cubeGeo = new THREE.BoxGeometry(1000000, 1, 100000);
-    let cubeMat = new THREE.MeshLambertMaterial({color: 0xA0522D});
+    let cubeMat = new THREE.MeshLambertMaterial({color: 0xF5DEB3});
     let ground = new THREE.Mesh(cubeGeo, cubeMat);
     ground.translateY(-402);
     scene.add(ground);
@@ -161,32 +158,41 @@ function init() {
     controls.enableRotate = false;
 
     document.body.onkeydown = function (key) {
-        switch (key.keyCode) {
-            case 32: // Space Bar
+        switch (key.key) {
+            case " ": // Space Bar
                 controls.enableRotate ? controls.enableRotate = false : controls.enableRotate = true;
                 shootDart = true;
                 update();
                 break;
-            case 87: // w
+            case "w": // w
                 dart.position.y += 20;
                 break;
-            case 65: // a
+            case "a": // a
                 dart.position.x -= 20;
                 break;
-            case 83: // s
+            case "s": // s
                 dart.position.y -=20;
                 break;
-            case 68: // d
+            case "d": // d
                 dart.position.x += 20;
                 break;
-            case 81: // q
+            case "q": // q
                 dart.rotation.x += .1;
                 break;
-            case 69: // e
+            case "e": // e
                 dart.rotation.y += .1;
                 break;
-            case 90: // z
+            case "z": // z
                 dart.rotation.z += .1;
+                break;
+            case "Q": // q
+                dart.rotation.x -= .1;
+                break;
+            case "E": // e
+                dart.rotation.y -= .1;
+                break;
+            case "Z": // z
+                dart.rotation.z -= .1;
                 break;
             /* Used for debugging (or cheating... I'm not a cop!) */
             // case 82: // r
@@ -300,8 +306,8 @@ function update(){
 
     if(shootDart){
         dart.position.z += -20;
-        dart.position.y += -6;
-        dart.rotateY(0.1);
+        dart.position.y += -10;
+        dart.rotateZ(.5);
     }
 
     if (alertLightOn) {
@@ -336,7 +342,6 @@ function updateScore(point) {
     }
     scoreChangeNeeded = false;
 
-    //document.getElementById("score").textContent="Score :" + score;
     if (numOfPoppedGoodBalloons == numOfGoodBalloons) {
 
         score = 0;
