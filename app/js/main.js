@@ -17,7 +17,8 @@ let goodCubeBoxes = [];
 let badCubeBoxes = [];
 let DART_X = 0, DART_Y = -100, DART_Z = 500;
 let guiParameters;
-let numOfGoodBalloons = 7;
+let numOfGoodBalloons = 3;
+let numOfBadBalloons = 1;
 let numOfPoppedGoodBalloons = 0;
 let alertLight;
 let alertLightOn = false;
@@ -79,28 +80,42 @@ function init() {
 
     /* Good Balloons */
     for (let i = 0; i < numOfGoodBalloons; i++) {
-        let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
-        let cubeMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
-        let goodCube = new THREE.Mesh(cubeGeo, cubeMat);
-        randomPlacement(goodCube);
-        scene.add(goodCube);
-        objects.push(goodCube);
-        poppableBalloons.push(goodCube);
-        let cubeBox = new THREE.Box3().setFromObject(goodCube);
-        goodCubeBoxes.push(cubeBox);
+        let loader = new THREE.ObjectLoader();
+        loader.load("models/goodBalloon/greenBalloon.json",function (goodCube) {
+            goodCube.scale.set( 4000, 4000, 4000 );
+            goodCube.rotateZ(.2);
+            randomPlacement(goodCube);
+            scene.add(goodCube);
+            objects.push(goodCube);
+            poppableBalloons.push(goodCube);
+            let cubeBox = new THREE.Box3().setFromObject(goodCube);
+            goodCubeBoxes.push(cubeBox);
+        });
     }
 
     /* Bad Balloons */
-    for (let i = 0; i < 3; i++) {
-        let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
-        let cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
-        let badCube = new THREE.Mesh(cubeGeo, cubeMat);
-        randomPlacement(badCube);
-        scene.add(badCube);
-        objects.push(badCube);
-        badBalloons.push(badCube);
-        let cubeBox = new THREE.Box3().setFromObject(badCube);
-        badCubeBoxes.push(cubeBox);
+    for (let i = 0; i < numOfBadBalloons; i++) {
+        // let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
+        // let cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
+        // let badCube = new THREE.Mesh(cubeGeo, cubeMat);
+        // randomPlacement(badCube);
+        // scene.add(badCube);
+        // objects.push(badCube);
+        // badBalloons.push(badCube);
+        // let cubeBox = new THREE.Box3().setFromObject(badCube);
+        // badCubeBoxes.push(cubeBox);
+
+        let loader = new THREE.ObjectLoader();
+        loader.load("models/badBalloon/redBalloon.json",function (badCube) {
+            badCube.scale.set( 4000, 4000, 4000 );
+            badCube.rotateZ(.2);
+            randomPlacement(badCube);
+            scene.add(badCube);
+            objects.push(badCube);
+            badBalloons.push(badCube);
+            let cubeBox = new THREE.Box3().setFromObject(badCube);
+            badCubeBoxes.push(cubeBox);
+        });
     }
 
     /* Ground */
@@ -392,13 +407,11 @@ function animate() {
 
     for (let mesh in poppableBalloons) {
         let balloon = poppableBalloons[mesh];
-        balloon.rotation.x += 0.01;
         balloon.rotation.y += 0.02;
     }
 
     for (let mesh in badBalloons) {
         let balloon = badBalloons[mesh];
-        balloon.rotation.x += 0.01;
         balloon.rotation.y += 0.02;
     }
 
