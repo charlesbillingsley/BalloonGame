@@ -349,7 +349,9 @@ function update(){
     }
 
     if(shootDart){
-        dart.position.z += -20;
+        // translate moves along local axis, so it will move the dart in the direction it's pointing
+        dart.translateZ(20);
+        // position moves along global axis, so it will allow the dart to drop through the air
         dart.position.y += -10;
         dart.rotateZ(.5);
     }
