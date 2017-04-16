@@ -10,7 +10,6 @@ let score;
 let shootDart;
 let gui;
 let tmpObject;
-let firstRecursion = true;
 let objects = [];
 let poppableBalloons = [];
 let badBalloons = [];
@@ -136,6 +135,9 @@ function init() {
             sControl: 's',
             aControl: 'a',
             dControl: 'd',
+            qRotate:  'q',
+            eRotate:  'e',
+            zRotate:   'z',
             shootControl: 'Space or Click'
 
         };
@@ -144,6 +146,9 @@ function init() {
     gui.add( guiParameters, 'sControl').name('Move Dart Down');
     gui.add( guiParameters, 'aControl').name('Move Dart Left');
     gui.add( guiParameters, 'dControl').name('Move Dart Right');
+    gui.add( guiParameters, 'qRotate').name('Rotate Dart on X');
+    gui.add( guiParameters, 'eRotate').name('Rotate Dart on Y');
+    gui.add( guiParameters, 'zRotate').name('Rotate Dart on Z');
     gui.add( guiParameters, 'shootControl').name('Shoot Dart');
     gui.open();
     guiParameters.gameScore = 0;
@@ -221,12 +226,11 @@ function onDocumentMouseDown( event ) {
 
 function randomPlacement(object){
 
-    if(firstRecursion) {
-        tmpObject = object.clone();
-    }
+    tmpObject = object.clone();
+    tmpObject.position.set(0,0,0);
 
-    let translationX = Math.floor(Math.random() * (270 - (-270))) + (-270);
-    let translationY = Math.floor(Math.random() * (150 - (-150))) + (-150);
+    let translationX = Math.floor(Math.random() * (250 - (-250))) + (-250);
+    let translationY = Math.floor(Math.random() * (130 - (-130))) + (-130);
     tmpObject.translateX(translationX);
     tmpObject.translateY(translationY);
 
@@ -236,7 +240,6 @@ function randomPlacement(object){
         goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
 
         if (cmpBox.intersectsBox(goodCubeBoxes[i])) {
-            firstRecursion = false;
             randomPlacement(object);
         }
     }
@@ -245,25 +248,23 @@ function randomPlacement(object){
         badCubeBoxes[i].setFromObject(badBalloons[i]);
 
         if (cmpBox.intersectsBox(badCubeBoxes[i])) {
-            firstRecursion = false;
             randomPlacement(object);
         }
     }
 
-    if(tmpObject.position.x > 270 || tmpObject.position.x < -270){
-        firstRecursion = false;
-        randomPlacement(object);
-    }
-
-    if(tmpObject.position.y > 150 || tmpObject.position.y < -150){
-        firstRecursion = false;
-        randomPlacement(object);
-    }
-
+    // object.position.set(0,0,0);
     object.translateX(translationX);
     object.translateY(translationY);
-    firstRecursion = true;
 
+    if(object.position.x > 250 || object.position.x < -250){
+        object.position.set(0,0,0);
+        randomPlacement(object);
+    }
+
+    if(object.position.y > 130 || object.position.y < -130){
+        object.position.set(0,0,0);
+        randomPlacement(object);
+    }
 
 }
 
