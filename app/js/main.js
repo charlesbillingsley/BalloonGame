@@ -21,7 +21,7 @@ let numOfPoppedGoodBalloons = 0;
 let alertLight;
 let alertLightOn = false;
 let alertLightCounter = 0;
-const alertLightDuration = 5;
+const alertLightDuration = 20;
 
 init();
 animate();
