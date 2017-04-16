@@ -9,6 +9,8 @@ let mouse, raycaster;
 let score;
 let shootDart;
 let gui;
+let tmpObject;
+let firstRecursion = true;
 let objects = [];
 let poppableBalloons = [];
 let badBalloons = [];
@@ -79,8 +81,9 @@ function init() {
         let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
         let cubeMat = new THREE.MeshPhongMaterial({color: 0x00ff00});
         let goodCube = new THREE.Mesh(cubeGeo, cubeMat);
-        goodCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
-        goodCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
+        randomPlacement(goodCube);
+        //goodCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
+        //goodCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
         scene.add(goodCube);
         objects.push(goodCube);
         poppableBalloons.push(goodCube);
@@ -93,8 +96,9 @@ function init() {
         let cubeGeo = new THREE.BoxGeometry(50, 50, 50);
         let cubeMat = new THREE.MeshPhongMaterial({color: 0xff0000});
         let badCube = new THREE.Mesh(cubeGeo, cubeMat);
-        badCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
-        badCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
+        randomPlacement(badCube);
+        //badCube.translateX(Math.floor(Math.random() * (270 - (-270))) + (-270));
+        //badCube.translateY(Math.floor(Math.random() * (150 - (-150))) + (-150));
         scene.add(badCube);
         objects.push(badCube);
         badBalloons.push(badCube);
@@ -175,6 +179,15 @@ function init() {
             case 68: // d
                 dart.position.x += 20;
                 break;
+            case 81: // q
+                dart.rotation.x += .1;
+                break;
+            case 69: // e
+                dart.rotation.y += .1;
+                break;
+            case 90: // z
+                dart.rotation.z += .1;
+                break;
             /* Used for debugging (or cheating... I'm not a cop!) */
             // case 82: // r
             //     dart.position.z +=20;
@@ -203,6 +216,50 @@ function onDocumentTouchStart( event ) {
 function onDocumentMouseDown( event ) {
     shootDart = true;
     update();
+
+}
+
+function randomPlacement(object){
+
+    if(firstRecursion) {
+        tmpObject = object.clone();
+    }
+
+    let translationX = Math.floor(Math.random() * (270 - (-270))) + (-270);
+    let translationY = Math.floor(Math.random() * (150 - (-150))) + (-150);
+    tmpObject.translateX(translationX);
+    tmpObject.translateY(translationY);
+
+    let cmpBox = new THREE.Box3().setFromObject(tmpObject);
+
+    for (let i = 0; i < goodCubeBoxes.length; i++) {
+        goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
+
+        if (cmpBox.intersectsBox(goodCubeBoxes[i])) {
+            firstRecursion = false;
+            randomPlacement(object);
+        }
+    }
+
+    for (let i = 0; i < badCubeBoxes.length; i++) {
+        badCubeBoxes[i].setFromObject(badBalloons[i]);
+
+        if (cmpBox.intersectsBox(badCubeBoxes[i])) {
+            firstRecursion = false;
+            randomPlacement(object);
+        }
+    }
+
+    //if(tmpObject.position.x > 270 || tmpObject.position.x < 270){
+    //    console.log(tmpObject.position.x);
+    //    firstRecursion = false;
+    //    randomPlacement(object);
+    //}
+
+    object.translateX(translationX);
+    object.translateY(translationY);
+    firstRecursion = true;
+
 
 }
 
