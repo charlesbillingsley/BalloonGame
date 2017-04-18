@@ -20,7 +20,7 @@ let badCubeBoxes = [];
 let DART_X = 0, DART_Y = -100, DART_Z = 500;
 let guiParameters;
 let numOfGoodBalloons = 7;
-let numOfBadBalloons = 3;
+let numOfBadBalloons = 4;
 let numOfPoppedGoodBalloons = 0;
 let alertLight, buzzer, goodTone, tada, carnival, source;
 let alertLightOn = false;
@@ -84,7 +84,7 @@ function init() {
     let textLoader = new THREE.FontLoader();
     textLoader.load('fonts/Immortal_Regular.json', function (font) {
 
-        let textGeometry = new THREE.TextGeometry("Balloon \n Pop!", {
+        let textGeometry = new THREE.TextGeometry("Balloon \n  Pop!", {
 
             font: font,
 
@@ -310,10 +310,10 @@ function randomPlacement(object){
 
     while (!placed) {
         resetWhile = false;
-        let translationX = Math.floor(Math.random() * (250 - (-250))) + (-250);
-        let translationY = Math.floor(Math.random() * (130 - (-130))) + (-130);
+        let posX = Math.floor(Math.random() * (250 - (-250))) + (-250);
+        let posY = Math.floor(Math.random() * (170 - (-120))) + (-120);
 
-        tmpObject.position.set(translationX,translationY,0);
+        tmpObject.position.set(posX,posY,0);
 
         cmpBox.setFromObject(tmpObject);
         cmpBox.expandByScalar(2);
@@ -344,7 +344,7 @@ function randomPlacement(object){
             continue;
         }
 
-        object.position.set(translationX,translationY,0);
+        object.position.set(posX,posY,0);
         placed = true;
     }
 }
