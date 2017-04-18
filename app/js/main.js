@@ -314,6 +314,7 @@ function randomPlacement(object){
         tmpObject.translateY(translationY);
 
         let cmpBox = new THREE.Box3().setFromObject(tmpObject);
+        cmpBox.expandByScalar(-.5);
 
         for (let i = 0; i < goodCubeBoxes.length; i++) {
             goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
@@ -341,6 +342,7 @@ function update(){
 
     if (dartBox) {
         dartBox.setFromObject(dart);
+        dartBox.expandByScalar(-2);
 
         for (let i = 0; i < goodCubeBoxes.length; i++) {
             goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
