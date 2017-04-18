@@ -304,36 +304,47 @@ function onDocumentMouseDown( event ) {
 
 function randomPlacement(object){
     let placed = false;
+    let resetWhile = false;
+    let cmpBox = new THREE.Box3();
     tmpObject = object.clone();
-    tmpObject.position.set(0,0,0);
 
     while (!placed) {
+        resetWhile = false;
         let translationX = Math.floor(Math.random() * (250 - (-250))) + (-250);
         let translationY = Math.floor(Math.random() * (130 - (-130))) + (-130);
-        tmpObject.translateX(translationX);
-        tmpObject.translateY(translationY);
 
-        let cmpBox = new THREE.Box3().setFromObject(tmpObject);
-        cmpBox.expandByScalar(-.5);
+        tmpObject.position.set(translationX,translationY,0);
 
-        for (let i = 0; i < goodCubeBoxes.length; i++) {
+        cmpBox.setFromObject(tmpObject);
+        cmpBox.expandByScalar(2);
+
+        for (let i = 0; i < goodCubeBoxes.length && !resetWhile; i++) {
             goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
 
             if (cmpBox.intersectsBox(goodCubeBoxes[i])) {
+                resetWhile = true;
                 continue;
             }
         }
 
-        for (let i = 0; i < badCubeBoxes.length; i++) {
+        if (resetWhile) {
+            continue;
+        }
+
+        for (let i = 0; i < badCubeBoxes.length && !resetWhile; i++) {
             badCubeBoxes[i].setFromObject(badBalloons[i]);
 
             if (cmpBox.intersectsBox(badCubeBoxes[i])) {
+                resetWhile = true;
                 continue;
             }
         }
 
-        object.translateX(translationX);
-        object.translateY(translationY);
+        if (resetWhile) {
+            continue;
+        }
+
+        object.position.set(translationX,translationY,0);
         placed = true;
     }
 }
