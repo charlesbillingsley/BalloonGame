@@ -43,7 +43,7 @@ function init() {
     let dartLoader = new THREE.ObjectLoader();
     dartLoader.load("models/dart/dart.json",function ( object ) {
         object.scale.set( 500, 500, 500 );
-        object.rotateY(3.15);
+        object.rotation.set(0,3.15,.75);
         object.position.set(DART_X, DART_Y, DART_Z);
         dart = object;
         scene.add( dart );
@@ -330,7 +330,6 @@ function randomPlacement(object){
         }
     }
 
-    // object.position.set(0,0,0);
     object.translateX(translationX);
     object.translateY(translationY);
 
@@ -348,24 +347,26 @@ function randomPlacement(object){
 
 function update(){
 
-    dartBox.setFromObject(dart);
+    if (dartBox) {
+        dartBox.setFromObject(dart);
 
-    for (let i = 0; i < goodCubeBoxes.length; i++) {
-        goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
+        for (let i = 0; i < goodCubeBoxes.length; i++) {
+            goodCubeBoxes[i].setFromObject(poppableBalloons[i]);
 
-        if (dartBox.intersectsBox(goodCubeBoxes[i])) {
-            removeObject(poppableBalloons[i]);
-            numOfPoppedGoodBalloons++;
-            goodTone.play();
-            updateScore(true);
-            resetDart();
+            if (dartBox.intersectsBox(goodCubeBoxes[i])) {
+                removeObject(poppableBalloons[i]);
+                numOfPoppedGoodBalloons++;
+                goodTone.play();
+                updateScore(true);
+                resetDart();
+            }
         }
     }
 
     for (let i = 0; i < badCubeBoxes.length; i++) {
         badCubeBoxes[i].setFromObject(badBalloons[i]);
 
-        if (dartBox.intersectsBox(badCubeBoxes[i])) {
+        if (dartBox && dartBox.intersectsBox(badCubeBoxes[i])) {
             removeObject(badBalloons[i]);
             scene.add(alertLight);
             alertLightOn = true;
@@ -375,7 +376,7 @@ function update(){
         }
     }
 
-    if(dart.position.z < -20){
+    if(dart && dart.position.z < -20){
         resetDart();
     }
 
@@ -400,6 +401,7 @@ function update(){
 
 function resetDart(){
     dart.position.set(DART_X, DART_Y, DART_Z);
+    dart.rotation.set(0, 3.15, .75);
     shootDart = false;
 }
 
